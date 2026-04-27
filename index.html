@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>EquityFlow | Beranda</title>
+    
+            <!-- FAVICON -->
+    <link rel="icon" type="image/png" sizes="32x32" href="favicon.png">
+    <link rel="apple-touch-icon" href="favicon.png">
+    
+    <meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="EquityFlow">
+<meta name="theme-color" content="#1e293b">
+
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+            background: #f5f7fb;
+            color: #1e293b;
+            padding: 16px 12px 90px;
+            min-height: 100vh;
+            transition: background 0.25s ease, color 0.2s ease;
+        }
+        body.dark { background: #0f1219; color: #eef2ff; }
+        .app-wrapper { max-width: 1280px; margin: 0 auto; }
+        
+        /* Logo di atas - SAMA PERSIS dengan kalender.html */
+        .logo-top {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .logo-oval {
+            background: linear-gradient(125deg, #1e293b, #0f172a);
+            padding: 10px 32px;
+            border-radius: 100px;
+            color: white;
+            font-weight: 700;
+            font-size: 1.3rem;
+            display: inline-block;
+        }
+        body.dark .logo-oval { background: linear-gradient(125deg, #2d3a4e, #1a2538); }
+        
+        /* GRID 2 KOLOM untuk Nama Orang dan Mode - SAMA PERSIS dengan kalender.html */
+        .two-column-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+        
+        /* Card untuk masing-masing kolom */
+        .grid-card {
+            background: rgba(255,255,255,0.7);
+            backdrop-filter: blur(8px);
+            border-radius: 60px;
+            padding: 8px 20px;
+            border: 1px solid rgba(0,0,0,0.08);
+            transition: all 0.2s ease;
+        }
+        body.dark .grid-card { 
+            background: rgba(30,41,59,0.8); 
+            border-color: #334155; 
+        }
+        .grid-card:hover {
+            background: rgba(255,255,255,0.85);
+            transform: translateY(-1px);
+        }
+        body.dark .grid-card:hover {
+            background: rgba(40, 55, 80, 0.9);
+        }
+        
+        /* Kolom Kiri: Nama Trader */
+        .trader-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            width: 100%;
+        }
+        .trader-icon {
+            font-size: 1.1rem;
+            flex-shrink: 0;
+        }
+        #traderNameInput {
+            background: transparent;
+            border: none;
+            font-weight: 600;
+            font-size: 0.95rem;
+            padding: 10px 0;
+            width: 100%;
+            outline: none;
+            color: #0f172a;
+            font-family: inherit;
+        }
+        body.dark #traderNameInput { color: #f1f5f9; }
+        #traderNameInput::placeholder {
+            color: #94a3b8;
+        }
+        
+        /* Kolom Kanan: Mode (Dark/Light) */
+        .mode-wrapper {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            width: 100%;
+        }
+        .mode-label {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: #475569;
+        }
+        body.dark .mode-label {
+            color: #cbd5e1;
+        }
+        .theme-toggle-btn {
+            background: #1e293b;
+            border: none;
+            border-radius: 60px;
+            padding: 8px 20px;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 0.85rem;
+            color: white;
+            transition: all 0.2s;
+            min-width: 100px;
+        }
+        body.dark .theme-toggle-btn {
+            background: #3b82f6;
+            color: white;
+        }
+        .theme-toggle-btn:hover {
+            transform: scale(0.98);
+            opacity: 0.9;
+        }
+        
+        /* Card untuk konten statistik */
+        .card {
+            background: rgba(255,255,255,0.85);
+            backdrop-filter: blur(2px);
+            border-radius: 28px;
+            padding: 1.5rem;
+            margin-bottom: 20px;
+            border: 1px solid rgba(255,255,255,0.5);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.02);
+        }
+        body.dark .card { background: rgba(20, 28, 38, 0.9); border-color: #2d3748; }
+        
+        /* Total Akumulasi Saldo - Full Width */
+        .total-equity {
+            background: linear-gradient(135deg, #1e293b, #0f172a);
+            border-radius: 24px;
+            padding: 1.2rem;
+            margin-bottom: 1.5rem;
+            text-align: center;
+            color: white;
+        }
+        body.dark .total-equity {
+            background: linear-gradient(135deg, #2d3a4e, #1a2538);
+        }
+        .total-equity-label {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 600;
+            opacity: 0.8;
+        }
+        .total-equity-number {
+            font-size: 2rem;
+            font-weight: 800;
+            margin-top: 6px;
+            word-break: break-word;
+        }
+        
+        /* 3 Kolom Grid untuk Profit, Winrate, Minus */
+        .stats-three-col {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+            margin-bottom: 1.5rem;
+        }
+        .stat-card {
+            background: #ffffffd9;
+            border-radius: 20px;
+            padding: 1rem;
+            text-align: center;
+            border: 1px solid #eef2ff;
+            transition: transform 0.2s;
+        }
+        body.dark .stat-card {
+            background: #111827dd;
+            border-color: #2d3a4e;
+        }
+        .stat-card:hover { transform: translateY(-2px); }
+        .stat-icon { font-size: 1.8rem; margin-bottom: 4px; }
+        .stat-label-small {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-weight: 600;
+            color: #5b6e8c;
+            margin-bottom: 6px;
+        }
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: 800;
+        }
+        .profit-clr { color: #10b981; }
+        .loss-clr { color: #dc2626; }
+        
+        /* 2 Kolom Grid untuk Total Profit Rp dan Total Minus Rp */
+        .stats-two-col {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 16px;
+            margin-bottom: 0.5rem;
+        }
+        .stat-card-large {
+            background: #ffffffd9;
+            border-radius: 20px;
+            padding: 1rem;
+            text-align: center;
+            border: 1px solid #eef2ff;
+        }
+        body.dark .stat-card-large {
+            background: #111827dd;
+            border-color: #2d3a4e;
+        }
+        .stat-label-large {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-weight: 600;
+            color: #5b6e8c;
+            margin-bottom: 8px;
+        }
+        .stat-value-large {
+            font-size: 1.3rem;
+            font-weight: 800;
+        }
+        
+        /* Bottom Nav - SAMA PERSIS dengan kalender.html */
+        .bottom-nav {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: auto;
+            background: rgba(255, 255, 255, 0.94);
+            backdrop-filter: blur(20px);
+            border-radius: 60px;
+            padding: 6px 18px;
+            display: flex;
+            gap: 8px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+            z-index: 100;
+        }
+        body.dark .bottom-nav { background: rgba(20, 28, 40, 0.94); }
+        .nav-item {
+            background: transparent;
+            border: none;
+            padding: 8px 24px;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 0.85rem;
+            cursor: pointer;
+            color: #4b5563;
+            text-decoration: none;
+            display: inline-block;
+        }
+        body.dark .nav-item { color: #9ca3af; }
+        .nav-item.active {
+            background: #1e293b;
+            color: white;
+        }
+        body.dark .nav-item.active { background: #3b82f6; }
+        @media (max-width: 560px) {
+            .nav-item { padding: 6px 16px; font-size: 0.75rem; }
+            .bottom-nav { gap: 4px; padding: 5px 12px; }
+            .stats-three-col { gap: 10px; }
+            .stats-two-col { gap: 10px; }
+            .stat-value { font-size: 1.2rem; }
+            .stat-value-large { font-size: 1rem; }
+            .total-equity-number { font-size: 1.5rem; }
+            .two-column-grid { gap: 10px; }
+            .grid-card { padding: 6px 14px; }
+            .theme-toggle-btn { padding: 6px 12px; font-size: 0.75rem; min-width: 80px; }
+        }
+        @media (max-width: 480px) {
+            .stat-card { padding: 0.7rem; }
+            .stat-card-large { padding: 0.7rem; }
+            .stat-icon { font-size: 1.4rem; }
+        }
+        footer { text-align: center; margin-top: 24px; font-size: 0.65rem; opacity: 0.5; }
+        
+        hr {
+            margin: 12px 0;
+            border-color: #e2e8f0;
+            opacity: 0.3;
+        }
+        body.dark hr { border-color: #334155; }
+    </style>
+</head>
+<body>
+<div class="app-wrapper">
+    <!-- Logo di tengah atas - SAMA PERSIS dengan kalender.html -->
+    <div class="logo-top">
+        <div class="logo-oval"> EQUITY FLOW </div>
+    </div>
+    
+    <!-- GRID 2 KOLOM: Nama Orang (kiri) dan Mode (kanan) - SAMA PERSIS dengan kalender.html -->
+    <div class="two-column-grid">
+        <!-- Kolom Kiri: Nama Trader -->
+        <div class="grid-card">
+            <div class="trader-wrapper">
+                <span class="trader-icon">👤</span>
+                <input type="text" id="traderNameInput" placeholder="Nama Trader" maxlength="28">
+            </div>
+        </div>
+        
+        <!-- Kolom Kanan: Mode Dark/Light -->
+        <div class="grid-card">
+            <div class="mode-wrapper">
+                <span class="mode-label">Mode Tema</span>
+                <button class="theme-toggle-btn" id="darkModeToggle">🌙 Dark</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="card">
+        <!-- Total Akumulasi Saldo - Full Width -->
+        <div class="total-equity" id="totalEquityContainer">
+            <div class="total-equity-label">TOTAL AKUMULASI SALDO</div>
+            <div class="total-equity-number" id="totalEquityValue">Rp 0</div>
+        </div>
+
+        <!-- 3 Kolom Grid: Profit (kali) | Winrate | Minus (kali) -->
+        <div class="stats-three-col" id="threeColStats">
+            <div class="stat-card">
+                <div class="stat-label-small">Total TP</div>
+                <div class="stat-value profit-clr" id="profitCountValue">0</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label-small">Winrate</div>
+                <div class="stat-value" id="winrateValue">0%</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label-small">Total SL</div>
+                <div class="stat-value loss-clr" id="lossCountValue">0</div>
+            </div>
+        </div>
+
+        <!-- 2 Kolom Grid: Total Profit Rp | Total Minus Rp -->
+        <div class="stats-two-col" id="twoColStats">
+            <div class="stat-card-large">
+                <div class="stat-label-large">Laba Bersih</div>
+                <div class="stat-value-large profit-clr" id="totalProfitValue">Rp 0</div>
+            </div>
+            <div class="stat-card-large">
+                <div class="stat-label-large">Laba Kotor</div>
+                <div class="stat-value-large loss-clr" id="totalLossValue">Rp 0</div>
+            </div>
+        </div>
+        
+        <div style="margin-top:12px;text-align:center;font-size:0.7rem;">1% setiap hari lebih baik daripada diam saja</div>
+    </div>
+
+    <footer>© EquityFlow • Aplikasi Finance and Investment</footer>
+</div>
+
+<div class="bottom-nav">
+    <a href="beranda.html" class="nav-item active" data-nav="beranda">Beranda</a>
+    <a href="trade.html" class="nav-item" data-nav="trade">Trade</a>
+    <a href="kalender.html" class="nav-item" data-nav="kalender">Kalender</a>
+</div>
+
+<script>
+    // Data Storage
+    let tradingDB = {
+        monthsData: {},
+        globalStats: { totalProfitRp:0, totalLossRp:0, profitCount:0, lossCount:0, netWorth:0 },
+        traderName: "Jo Investor Muda."
+    };
+
+    function saveToLocal() { localStorage.setItem("EquityFlowApp", JSON.stringify(tradingDB)); }
+    
+    function loadFromLocal() {
+        const raw = localStorage.getItem("EquityFlowApp");
+        if(raw) {
+            try { 
+                const data = JSON.parse(raw); 
+                tradingDB = data; 
+                if(!tradingDB.monthsData) tradingDB.monthsData = {}; 
+                if(!tradingDB.globalStats) tradingDB.globalStats = { totalProfitRp:0, totalLossRp:0, profitCount:0, lossCount:0, netWorth:0 }; 
+            } catch(e) {}
+        }
+        // Default data jika kosong
+        if(Object.keys(tradingDB.monthsData).length === 0) {
+            tradingDB.monthsData["2026-01"] = { modalAwal: 10000000, trades: {} };
+        }
+        recalcGlobalStatsFromData();
+        saveToLocal();
+    }
+    
+    function recalcGlobalStatsFromData() {
+        let totalProfitRp = 0, totalLossRp = 0, profitCount = 0, lossCount = 0;
+        
+        // Kumpulkan semua bulan dan urutkan
+        const months = Object.keys(tradingDB.monthsData).sort();
+        
+        // Hitung profit/loss dari semua trade
+        for(const monthKey of months) {
+            const monthData = tradingDB.monthsData[monthKey];
+            const trades = monthData.trades || {};
+            for(const day in trades) {
+                const trade = trades[day];
+                const val = trade.value;
+                if(val > 0) { 
+                    totalProfitRp += val; 
+                    profitCount++; 
+                }
+                else if(val < 0) { 
+                    totalLossRp += Math.abs(val); 
+                    lossCount++; 
+                }
+            }
+        }
+        
+        // Hitung net worth akhir (ekuitas terakhir)
+        let lastEquity = 0;
+        if(months.length > 0) {
+            // Ambil bulan terakhir berdasarkan urutan
+            const lastMonthKey = months[months.length-1];
+            const lastMonthData = tradingDB.monthsData[lastMonthKey];
+            let equity = lastMonthData.modalAwal;
+            const trades = lastMonthData.trades || {};
+            // Urutkan hari untuk kalkulasi ekuitas berurutan
+            const sortedDays = Object.keys(trades).sort((a,b) => parseInt(a) - parseInt(b));
+            for(const day of sortedDays) {
+                equity += trades[day].value;
+            }
+            lastEquity = equity;
+        } else {
+            lastEquity = 10000000;
+        }
+        
+        tradingDB.globalStats = { 
+            totalProfitRp, 
+            totalLossRp, 
+            profitCount, 
+            lossCount, 
+            netWorth: lastEquity 
+        };
+        
+        saveToLocal();
+    }
+    
+    // Fungsi update UI
+    function updateBerandaUI() {
+        const stats = tradingDB.globalStats;
+        
+        // Total Akumulasi Saldo
+        const totalEquityEl = document.getElementById("totalEquityValue");
+        if(totalEquityEl) {
+            totalEquityEl.innerText = `Rp ${stats.netWorth.toLocaleString()}`;
+        }
+        
+        // Profit Count (kali)
+        const profitCountEl = document.getElementById("profitCountValue");
+        if(profitCountEl) {
+            profitCountEl.innerText = stats.profitCount.toLocaleString();
+        }
+        
+        // Loss Count (kali)
+        const lossCountEl = document.getElementById("lossCountValue");
+        if(lossCountEl) {
+            lossCountEl.innerText = stats.lossCount.toLocaleString();
+        }
+        
+        // Winrate
+        const winrateEl = document.getElementById("winrateValue");
+        const totalTrades = stats.profitCount + stats.lossCount;
+        const winrate = totalTrades === 0 ? 0 : (stats.profitCount / totalTrades) * 100;
+        if(winrateEl) {
+            winrateEl.innerText = `${winrate.toFixed(1)}%`;
+        }
+        
+        // Total Profit Rp
+        const totalProfitEl = document.getElementById("totalProfitValue");
+        if(totalProfitEl) {
+            totalProfitEl.innerText = `Rp ${stats.totalProfitRp.toLocaleString()}`;
+        }
+        
+        // Total Minus Rp
+        const totalLossEl = document.getElementById("totalLossValue");
+        if(totalLossEl) {
+            totalLossEl.innerText = `Rp ${stats.totalLossRp.toLocaleString()}`;
+        }
+    }
+    
+    // Fungsi untuk memperbarui seluruh tampilan statistik
+    function refreshAllStats() {
+        recalcGlobalStatsFromData();
+        updateBerandaUI();
+    }
+    
+    // Inisialisasi nama trader
+    const traderInput = document.getElementById("traderNameInput");
+    if(traderInput) {
+        traderInput.value = tradingDB.traderName;
+        traderInput.addEventListener("change", () => { 
+            tradingDB.traderName = traderInput.value; 
+            saveToLocal(); 
+        });
+    }
+    
+    // Dark mode - SAMA PERSIS dengan kalender.html
+    if(localStorage.getItem("themePref") === "dark") document.body.classList.add("dark");
+    const darkModeBtn = document.getElementById("darkModeToggle");
+    if(darkModeBtn) {
+        darkModeBtn.addEventListener("click", () => {
+            document.body.classList.toggle("dark");
+            const isDark = document.body.classList.contains("dark");
+            localStorage.setItem("themePref", isDark ? "dark" : "light");
+            darkModeBtn.innerText = isDark ? "☀️ Light" : "🌙 Dark";
+        });
+        if(document.body.classList.contains("dark")) darkModeBtn.innerText = "☀️ Light";
+        else darkModeBtn.innerText = "🌙 Dark";
+    }
+    
+    // Mendengarkan perubahan storage dari tab lain
+    window.addEventListener('storage', function(e) {
+        if(e.key === 'EquityFlowApp') {
+            loadFromLocal();
+            refreshAllStats();
+            if(traderInput) traderInput.value = tradingDB.traderName;
+        }
+    });
+    
+    // Load data awal
+    loadFromLocal();
+    refreshAllStats();
+    
+    // Sinkronisasi data secara berkala
+    setInterval(() => {
+        const raw = localStorage.getItem("EquityFlowApp");
+        if(raw) {
+            try {
+                const newData = JSON.parse(raw);
+                // Cek apakah ada perubahan data
+                if(JSON.stringify(tradingDB) !== JSON.stringify(newData)) {
+                    tradingDB = newData;
+                    if(!tradingDB.monthsData) tradingDB.monthsData = {};
+                    if(!tradingDB.globalStats) tradingDB.globalStats = { totalProfitRp:0, totalLossRp:0, profitCount:0, lossCount:0, netWorth:0 };
+                    refreshAllStats();
+                    if(traderInput) traderInput.value = tradingDB.traderName;
+                }
+            } catch(e) {}
+        }
+    }, 500);
+</script>
+</body>
+</html>
